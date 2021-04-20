@@ -31,6 +31,7 @@ func (c *client) write() {
 			err != nil {
 				break
 			}
+		
 	}
 	c.socket.Close()
 }
