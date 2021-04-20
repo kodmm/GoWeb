@@ -6,6 +6,8 @@ import(
 	"text/template"
 	"path/filepath"
 	"sync"
+	"fmt"
+	"flag"
 )
 
 //templは1つのテンプレートを表す
@@ -19,19 +21,24 @@ func (t *templateHandler) ServeHTTP (w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(w, nil)
+	t.templ.Execute(w, r)
 }
 
 func main() {
-	r := newRoom() 
+	var addr = flag.String("addr", ":8080", "アプリケーションのアドレス")
+	
+	flag.Parse()
+	fmt.Println(*addr)
+
+	r := newRoom()
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 
-	//チャットルーム開始
+	// チャットルームの開始
 	go r.run()
-
-	//Webサーバの起動
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	// Webサーバを起動
+	log.Println("Webサーバを開始する。ポート:", *addr)
+	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 	
