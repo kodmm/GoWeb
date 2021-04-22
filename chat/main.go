@@ -8,8 +8,8 @@ import(
 	"sync"
 	"fmt"
 	"flag"
-	"github.com/kodmm/GoWeb/trace"
-	"os"
+	// "github.com/kodmm/GoWeb/trace"
+	// "os"
 )
 
 //templは1つのテンプレートを表す
@@ -33,7 +33,7 @@ func main() {
 	fmt.Println(*addr)
 
 	r := newRoom()
-	r.tracer = trace.New(os.Stdout)
+	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 
