@@ -3,9 +3,9 @@ package main
 import(
 	"log"
 	"net/http"
-	
+	"github.com/kodmm/GoWeb/trace"
 	"github.com/gorilla/websocket"
-	"/GoWeb/trace"
+	
 )
 
 type room struct {
@@ -28,6 +28,7 @@ func newRoom() *room {
 		join: make(chan *client),
 		leave: make(chan *client),
 		clients: make(map[*client]bool),
+		tracer: trace.Off(),
 	}
 }
 
