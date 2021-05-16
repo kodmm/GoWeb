@@ -10,6 +10,8 @@
         <ul id="messages"></ul>
         WebSocketを使用したアプリケーション
         <form id="chatbox">
+            {{.UserData.name}}:<br />
+            {{.Host}}<br />
             <textarea></textarea>
             <input type="submit" value="送信" />
         </form>
