@@ -66,7 +66,8 @@ func main() {
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
-	http.HandleFunc("/logout", func(w http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/logout/", func(w http.ResponseWriter, req *http.Request) {
+
 		http.SetCookie(w, &http.Cookie{
 			Name:   "auth",
 			Value:  "",
