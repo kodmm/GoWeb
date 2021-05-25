@@ -63,11 +63,11 @@ func main() {
 	r := newRoom(UseGravatar)
 	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	http.HandleFunc("/logout/", func(w http.ResponseWriter, req *http.Request) {
-
 		http.SetCookie(w, &http.Cookie{
 			Name:   "auth",
 			Value:  "",
