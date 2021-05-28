@@ -90,7 +90,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalln("ユーザの取得に失敗しました。", provider, "- ", err)
 		}
 
-		chatUser := *chatUser{User: user}
+		chatUser := &chatUser{User: user}
 		m := md5.New()
 		io.WriteString(m, strings.ToLower(user.Name()))
 		chatUser.uniqueID = fmt.Sprintf("%x", m.Sum(nil))

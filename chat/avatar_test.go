@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	gomniauthtest "gomniauth/test"
+	gomniauthtest "github.com/stretchr/gomniauth/test"
 )
 
 func TestAuthAvatar(t *testing.T) {
