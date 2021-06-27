@@ -26,7 +26,13 @@ var transforms = []string{
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	s := bufio.NewScanner(os.Stdin)
+	fp, err := os.Open("testdata.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer fp.Close()
+	s := bufio.NewScanner(fp)
+	fmt.Println(s)
 	for s.Scan() {
 		t := transforms[rand.Intn(len(transforms))]
 		fmt.Println(strings.Replace(t, otherWord, s.Text(), -1))
