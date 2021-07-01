@@ -16,7 +16,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	apiKey := os.Getenv("BHT_APIKEY")
-	fmt.Println(apiKey)
+
 	thesaurus := &thesaurus.BigHuge{APIKey: apiKey}
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
