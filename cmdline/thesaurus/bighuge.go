@@ -3,7 +3,6 @@ package thesaurus
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -24,8 +23,6 @@ func (b *BigHuge) Synonyms(term string) ([]string, error) {
 	var syns []string
 	response, err := http.Get("http://words.bighugelabs.com/api/2/" +
 		b.APIKey + "/" + term + "/json")
-	hoge, err := ioutil.ReadAll(response.Body)
-	fmt.Println(hoge)
 	if err != nil {
 		return syns, fmt.Errorf("bighuge: %qの類語検索に失敗しました: %v", term, err)
 	}
