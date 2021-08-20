@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
-	"github.com/garyburd/go-outh/oauth"
 	"github.com/joeshaw/envdecode"
 	"github.com/joho/godotenv"
 )
