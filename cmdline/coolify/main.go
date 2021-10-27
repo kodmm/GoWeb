@@ -22,6 +22,7 @@ func main() {
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
 		word := []rune(s.Text())
+		fmt.Println(word)
 		if randBool() {
 			var vI int = -1
 			for i, char := range word {
