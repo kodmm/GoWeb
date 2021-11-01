@@ -1,1 +1,1 @@
-{"topics":[{"channels":[],"name":"votes","paused":false}],"version":"1.2.0"}
+{"topics":[{"channels":[{"name":"counter","paused":false}],"name":"votes","paused":false}],"version":"1.2.0"}
