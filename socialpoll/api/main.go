@@ -19,7 +19,7 @@ func main() {
 	log.Println("MongoDBに接続します", *mongo)
 	db, err := mgo.Dial(*mongo)
 	if err != nil {
-		log.Fatalln("MongoDBへの接続に失敗しました。:", err)
+		log.Fatalln("MongoDBへの接続に失敗しました。", err)
 	}
 	defer db.Close()
 	mux := http.NewServeMux()
