@@ -12,6 +12,8 @@ func decodeBody(r *http.Request, v interface{}) error {
 }
 
 func encodeBody(w http.ResponseWriter, r *http.Request, v interface{}) error {
+	fmt.Println(json.NewEncoder(w).Encode(v))
+	fmt.Println(w)
 	return json.NewEncoder(w).Encode(v)
 }
 
