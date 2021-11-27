@@ -2,13 +2,17 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/kodmm/GoWeb/meander"
 )
 
 func main() {
-	// meander.APIKey = "TODO"
+	// meander.APIKey = "AIzaSyB1StzFiFH1jqcDhRcSUu-0UfOjTF72dDk"
+	meander.APIKey = os.Getenv("APIKey")
 	http.HandleFunc("/journeys", func(w http.ResponseWriter, r *http.Request) {
 		respond(w, r, meander.Journeys)
 	})
@@ -21,4 +25,12 @@ func respond(w http.ResponseWriter, r *http.Request, data []interface{}) error {
 		publicData[i] = meander.Public(d)
 	}
 	return json.NewEncoder(w).Encode(publicData)
+}
+
+func loadEnv() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Printf("読み込みできませんでした: %v", err)
+	}
+
 }
