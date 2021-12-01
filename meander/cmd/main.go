@@ -14,11 +14,12 @@ import (
 
 func main() {
 	// meander.APIKey = "AIzaSyB1StzFiFH1jqcDhRcSUu-0UfOjTF72dDk"
+	loadEnv()
 	meander.APIKey = os.Getenv("APIKey")
-	http.HandleFunc("/journeys", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/journeys", cors(func(w http.ResponseWriter, r *http.Request) {
 		respond(w, r, meander.Journeys)
-	})
-	http.HandleFunc("/recommendations", func(w http.ResponseWriter, r *http.Request) {
+	}))
+	http.HandleFunc("/recommendations", cors(func(w http.ResponseWriter, r *http.Request) {
 		q := &meander.Query{
 			Journey: strings.Split(r.URL.Query().Get("journey"), "|"),
 		}
@@ -29,7 +30,7 @@ func main() {
 		places := q.Run()
 		respond(w, r, places)
 
-	})
+	}))
 	http.ListenAndServe(":8080", http.DefaultServeMux)
 }
 
@@ -47,4 +48,11 @@ func loadEnv() {
 		fmt.Printf("読み込みできませんでした: %v", err)
 	}
 
+}
+
+func cors(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Controll-Allow-Origin", "*")
+		f(w, r)
+	}
 }
