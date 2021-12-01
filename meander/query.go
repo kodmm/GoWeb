@@ -55,7 +55,7 @@ func (p *Place) Public() interface{} {
 }
 
 func (q *Query) find(types string) (*googleResponse, error) {
-	u := "https://mqps.googleapis.com/maps/api/place/nearbysearch/json"
+	u := "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 	vals := make(url.Values)
 	vals.Set("location", fmt.Sprintf("%g, %g", q.Lat, q.Lng))
 	vals.Set("radius", fmt.Sprintf("%d", q.Radius))
@@ -66,7 +66,9 @@ func (q *Query) find(types string) (*googleResponse, error) {
 		vals.Set("minprice", fmt.Sprintf("%d", int(r.From)-1))
 		vals.Set("maxprice", fmt.Sprintf("%d", int(r.To)-1))
 	}
+	fmt.Println(u + "?" + vals.Encode())
 	res, err := http.Get(u + "?" + vals.Encode())
+	fmt.Println(res)
 	if err != nil {
 		return nil, err
 	}
