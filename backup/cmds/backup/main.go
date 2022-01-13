@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"strings"
 
 	"github.com/matryer/filedb"
 )
@@ -40,5 +41,11 @@ func main() {
 	if err != nil {
 		fatalErr = err
 		return
+	}
+
+	switch strings.ToLower(args[0]) {
+	case "list":
+	case "add":
+	case "remove":
 	}
 }
