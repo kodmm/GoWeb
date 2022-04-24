@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 	defer db.Close()
-	col, err := db.C("paths")
+	col, err := db.C("path")
 	if err != nil {
 		fatalErr = err
 		return
