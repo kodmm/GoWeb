@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"log"
+	"os"
 
 	"github.com/kodmm/GoWeb/backup"
 	"github.com/matryer/filedb"
@@ -43,5 +46,25 @@ func main() {
 		fatalErr = err
 		return
 	}
+
+	var path path
+	col.ForEach(func(_ int, data []byte) bool {
+		if err := json.Unmarshal(data, &path); err != nil {
+			fatalErr = err
+			return true
+		}
+		m.Paths[path.Path] = path.Hash
+		return false // 処理を続行
+	})
+	if fatalErr != nil {
+		return
+	}
+	if len(m.Paths) < 1 {
+		fatalErr = errors.New("パスがありません。backupツールを使用して追加してください。")
+		return
+	}
+
+	check(m, col)
+	signalChan := make(chan os.Signal, 1)
 
 }
