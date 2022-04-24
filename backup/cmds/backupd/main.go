@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 	defer db.Close()
-	col, err := db.C("path")
+	col, err := db.C("paths")
 	if err != nil {
 		fatalErr = err
 		return
@@ -100,7 +100,7 @@ func check(m *backup.Monitor, col *filedb.C) {
 				log.Println("JSONデータの読み込みに失敗しました"+"次の項目に進みます:", err)
 				return true, data, false
 			}
-			path.Hash, _ = m.Paths[path.Path]
+			path.Hash = m.Paths[path.Path]
 			newdata, err := json.Marshal(&path)
 			if err != nil {
 				log.Println("JSONデータの書き出しに失敗しました。"+"次の項目に進みます:", err)
