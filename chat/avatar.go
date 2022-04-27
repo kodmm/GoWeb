@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
 	"path/filepath"
 )
 
@@ -43,18 +42,26 @@ type FileSystemAvatar struct{}
 
 var UseFileSystemAvatar FileSystemAvatar
 
-func (_ FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
-	if files, err := ioutil.ReadDir("avatars"); err == nil {
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			if match, _ := filepath.Match(u.UniqueID()+"*", file.Name()); match {
-				return "/avatars/" + file.Name(), nil
-			}
-		}
+// func (_ FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
+// 	if files, err := ioutil.ReadDir("avatars"); err == nil {
+// 		for _, file := range files {
+// 			if file.IsDir() {
+// 				continue
+// 			}
+// 			if match, _ := filepath.Match(u.UniqueID()+"*", file.Name()); match {
+// 				return "/avatars/" + file.Name(), nil
+// 			}
+// 		}
+// 	}
+// 	return "", ErrNoAvatarURL
+// }
+
+func (FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	matches, err := filepath.Glob(filepath.Join("avatars", u.UniqueID()+"*"))
+	if err != nil || len(matches) == 0 {
+		return "", ErrNoAvatarURL
 	}
-	return "", ErrNoAvatarURL
+	return "/" + matches[0], nil
 }
 
 type TryAvatars []Avatar
