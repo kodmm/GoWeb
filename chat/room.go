@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 	"github.com/kodmm/GoWeb/trace"
@@ -19,7 +20,7 @@ type room struct {
 	//clientsには在室している全てのクライアントが保持されます。
 	clients map[*client]bool
 	//* tracerはチャットルームで行われた捜査のログを受け取る
-	tracer trace.Tracer
+	tracer *trace.Tracer
 }
 
 //newRoowmはすぐに利用できるチャットルームを生成して返す
@@ -29,7 +30,7 @@ func newRoom() *room {
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
-		tracer:  trace.Off(),
+		tracer:  &trace.New(os.Stdout),
 	}
 }
 
