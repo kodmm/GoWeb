@@ -1,57 +1,37 @@
 package main
 
 import (
+	"context"
 	"log"
 	"syscall"
-	"time"
 
 	"os"
 	"os/signal"
-	"sync"
 
 	"github.com/bitly/go-nsq"
 	mgo "gopkg.in/mgo.v2"
 )
 
 func main() {
-	var stoplock sync.Mutex
-	stop := false
-	stopChan := make(chan struct{}, 1)
+	ctx, cancel := context.WithCancel(context.Background())
 	signalChan := make(chan os.Signal, 1)
 	go func() {
 		<-signalChan
-		stoplock.Lock()
-		stop = true
-		stoplock.Unlock()
-		log.Println("停止します...")
-		stopChan <- struct{}{}
-		closeConn()
+		cancel()
+		log.Println("停止します。")
 	}()
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
 	if err := dialdb(); err != nil {
-		log.Fatalln("MongoDBへのダイヤルに失敗しました。:", err)
+		log.Fatalln("MongoDBへのダイヤルに失敗しました:", err)
 	}
 	defer closedb()
 
-	votes := make(chan string) // 投票結果のチャンネル
-	publisherStoppedChan := publishVotes(votes)
-	twitterStoppedChan := startTwitterStream(stopChan, votes)
-	go func() {
-		for {
-			time.Sleep(1 * time.Minute)
-			closeConn()
-			stoplock.Lock()
-			if stop {
-				stoplock.Unlock()
-				break
-			}
-			stoplock.Unlock()
-		}
+	// 処理開始
+	votes := make(chan string)
+	go twitterStream(ctx, votes)
+	publishVotes(votes)
 
-	}()
-	<-twitterStoppedChan
-	close(votes)
-	<-publisherStoppedChan
 }
 
 var db *mgo.Session
@@ -84,16 +64,11 @@ func loadOptions() ([]string, error) {
 }
 
 func publishVotes(votes <-chan string) <-chan struct{} {
-	stopchan := make(chan struct{}, 1)
 	pub, _ := nsq.NewProducer("127.0.0.1:4150", nsq.NewConfig())
-	go func() {
-		for vote := range votes {
-			pub.Publish("votes", []byte(vote))
-		}
-		log.Println("Publisher: 停止中です。")
-		pub.Stop()
-		log.Println("Publisher: 停止しました。")
-		stopchan <- struct{}{}
-	}()
-	return stopchan
+	for vote := range votes {
+		pub.Publish("votes", []byte(vote))
+	}
+	log.Println("Publisher: 停止中です。")
+	pub.Stop()
+	log.Println("Publisher: 停止しました。")
 }
