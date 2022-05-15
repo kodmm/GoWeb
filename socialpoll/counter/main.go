@@ -26,19 +26,20 @@ func fatal(e error) {
 const updateDuration = 1 * time.Second
 
 func main() {
-	defer func() {
-		if fatalErr != nil {
-			os.Exit(1)
-		}
-	}()
-	log.Println("データベースに接続します...")
+	err := counterMain()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func counterMain() error {
+	log.Println("データベースに接続します。")
 	db, err := mgo.Dial("localhost")
 	if err != nil {
-		fatal(err)
-		return
+		return err
 	}
 	defer func() {
-		log.Println("データベース接続を閉じます...")
+		log.Println("データベース接続を閉じます。。。")
 		db.Close()
 	}()
 	pollData := db.DB("ballots").C("polls")
@@ -70,7 +71,11 @@ func main() {
 
 	log.Println("NSQ上での投票を待機します...")
 	var updater *time.Timer
-	updater = time.AfterFunc(updateDuration, func() {
+
+	ticker := time.NewTicker(updateDuration)
+	defer ticker.Stop()
+
+	update := func() {
 		countsLock.Lock()
 		defer countsLock.Unlock()
 		if len(counts) == 0 {
@@ -85,7 +90,6 @@ func main() {
 				if _, err := pollData.UpdateAll(sel, up); err != nil {
 					log.Println("更新に失敗しました:", err)
 					ok = false
-					continue
 				}
 				counts[option] = 0
 			}
@@ -94,19 +98,18 @@ func main() {
 				counts = nil
 			}
 		}
-		updater.Reset(updateDuration)
-	})
-
+	}
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	for {
 		select {
+		case <-ticker.C:
+			update()
 		case <-termChan:
-			updater.Stop()
 			q.Stop()
 		case <-q.StopChan:
 			// 完了しました。
-			return
+			return nil
 		}
 	}
 
